@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import type { pokemon } from "./types";
-import pokeball from "../public/pokeball.png";
+import type { pokemon } from "../assets/types";
 
 export default function App() {
   const [pokemon, setPokemon] = useState<pokemon>();
