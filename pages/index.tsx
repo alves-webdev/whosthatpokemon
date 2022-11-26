@@ -95,7 +95,7 @@ export default function App() {
         <h3>click again to continue</h3></h1> : null}
         {wrong ? <h1
         className="text-2xl text-red-500"
-        >WRONG <br/>it's {pokemon?.name}</h1> : null}
+        >WRONG <br/>its {pokemon?.name}</h1> : null}
       </div>
       <div className="flex flex-row items-center justify-center">
       <input
