@@ -31,12 +31,19 @@ export default function App() {
         className=" cursor-pointer flex flex-col bg-slate-800 items-center justify-center p-4 rounded-lg shadow-lg
         mx-auto w-96"
       >
-
+        {pokemon === undefined ? (
+          <div className="animate-pulse">
+            <h1
+            className="text-4xl text-white font-bold"
+            >clique aqui</h1>
+          </div>
+        ) : (
         <img
           src={sprites[0]}
           alt="pokemon"
           className={ visible ? "w-80 h-90 hover:translate-y-1 hover:scale-110 transition duration-500 ease-in-out" : "w-80 h-90 hover:translate-y-1  filter contrast-0 hover:scale-110 transition duration-500 ease-in-out"}
         ></img>
+        )}
         {correct ? <h1
         className="text-2xl text-green-500"
         >acerto mizeravi</h1> : null}
@@ -47,7 +54,7 @@ export default function App() {
         className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
         onChange={(e) => setGuess(e.target.value)}
       ></input>
-      <button className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
+      <button type="submit" className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
       onClick={() => {
         if (guess.toLowerCase() === pokemon?.name) {
           setSprites([
