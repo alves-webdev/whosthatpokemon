@@ -10,10 +10,13 @@ export default function App() {
   const [sprites, setSprites] = useState<string[]>([]);
   const [correct, setCorrect] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [wrong, setWrong] = useState<boolean>(false);
+  const [gameOver, setGameOver] = useState<boolean>(false);
+  const [number , setNumber] = useState<number>(151);
 
   async function getPokemon() {
     const res = await axios.get(
-      "https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * 151)
+      "https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * number )
     );
     setPokemon(res.data);
     setSprites([
@@ -21,11 +24,42 @@ export default function App() {
     ]);
     setCorrect(false);
     setVisible(false);
+    setWrong(false);
   }
 
+  useEffect(() => {
+    if (lives === 0) {
+      setGameOver(true);
+    }
+  }, [lives]);
+  
+  const handlesubmit = () => {
+    if (guess.toLowerCase() === pokemon?.name) {
+      setSprites([
+        pokemon?.sprites.versions["generation-v"]["black-white"].animated.front_default,
+      ]);
+      setScore(score + 1);
+      setGuess("");
+      setCorrect(true);
+      setVisible(true);
+    } else {
+      setLives(lives - 1);
+      setGuess("");
+      setWrong(true);
+      setVisible(true);
+    }
+  }
+  
 
   return (
     <div className="min-h-screen py-2 bg-slate-400">
+      <select onChange={(e) => setNumber(parseInt(e.target.value))}>
+        <option value="151">Kanto</option>
+        <option value="251">Johto</option>
+        <option value="386">Hoenn</option>
+        <option value="493">Sinnoh</option>
+        <option value="649">Unova</option>
+      </select>
       <div
         onClick={getPokemon}
         className=" cursor-pointer flex flex-col bg-slate-800 items-center justify-center p-4 rounded-lg shadow-lg
@@ -35,7 +69,7 @@ export default function App() {
           <div className="animate-pulse">
             <h1
             className="text-4xl text-white font-bold"
-            >clique aqui</h1>
+            >Click me</h1>
           </div>
         ) : (
         <img
@@ -43,10 +77,25 @@ export default function App() {
           alt="pokemon"
           className={ visible ? "w-80 h-90 hover:translate-y-1 hover:scale-110 transition duration-500 ease-in-out" : "w-80 h-90 hover:translate-y-1  filter contrast-0 hover:scale-110 transition duration-500 ease-in-out"}
         ></img>
+        
         )}
+        {gameOver ? <h1>
+          Game Over <br></br> Score: {score} <br></br> <button
+          className="bg-slate-800 text-white font-bold p-2 rounded-lg shadow-lg hover:bg-slate-700 transition duration-500 ease-in-out"
+          onClick={() => {
+            setScore(0);
+            setLives(5);
+            setGameOver(false);
+          }}>Play Again</button>
+        </h1>
+        : null}
         {correct ? <h1
         className="text-2xl text-green-500"
-        >acerto mizeravi</h1> : null}
+        >CORRECT <br/>
+        <h3>click again to continue</h3></h1> : null}
+        {wrong ? <h1
+        className="text-2xl text-red-500"
+        >WRONG <br/>it's {pokemon?.name}</h1> : null}
       </div>
       <div className="flex flex-row items-center justify-center">
       <input
@@ -54,21 +103,24 @@ export default function App() {
         className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
         onChange={(e) => setGuess(e.target.value)}
       ></input>
-      <button type="submit" className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
+      <button 
+      disabled={gameOver}
+      type="submit" className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl"
       onClick={() => {
         if (guess.toLowerCase() === pokemon?.name) {
           setSprites([
             pokemon?.sprites.versions["generation-v"]["black-white"].animated.front_default,
           ]);
           setScore(score + 1);
-          setGuess("");
           setCorrect(true);
           setVisible(true);
+          setWrong(false);
         } else {
           setLives(lives - 1);
           setGuess("");
-          alert("wrong");
-          getPokemon();
+          setVisible(true);
+          setWrong(true);
+          setCorrect(false);
         }
       }}
       > Go </button>
