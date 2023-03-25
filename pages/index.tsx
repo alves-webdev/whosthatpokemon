@@ -13,8 +13,10 @@ export default function App() {
   const [wrong, setWrong] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [number , setNumber] = useState<number>(151);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function getPokemon() {
+    setIsLoading(true);
     const res = await axios.get(
       "https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * number )
     );
@@ -22,6 +24,7 @@ export default function App() {
     setSprites([
       res.data.sprites.versions["generation-v"]["black-white"].front_default
     ]);
+    setIsLoading(false);
     setCorrect(false);
     setVisible(false);
     setWrong(false);
@@ -52,8 +55,8 @@ export default function App() {
   
 
   return (
-    <div className="min-h-screen py-2 bg-slate-400">
-      <select onChange={(e) => setNumber(parseInt(e.target.value))}>
+    <div className="min-h-screen py-2 bg-slate-400 flex flex-col items-center justify-center">
+      <select onChange={(e) => setNumber(parseInt(e.target.value))} className="bg-slate-800 text-white text-2xl text-center mt-5 border-2 border-slate-600 rounded-xl">
         <option value="151">Kanto</option>
         <option value="251">Johto</option>
         <option value="386">Hoenn</option>
@@ -62,23 +65,26 @@ export default function App() {
       </select>
       <div
         onClick={getPokemon}
-        className=" cursor-pointer flex flex-col bg-slate-800 items-center justify-center p-4 rounded-lg shadow-lg
-        mx-auto w-96"
+        className=" cursor-pointer flex flex-col 
+        bg-slate-800 items-center justify-center p-4 rounded-lg shadow-lg
+        hover:bg-slate-700 transition duration-500 ease-in-out h-96 w-96
+        "
       >
         {pokemon === undefined ? (
-          <div className="animate-pulse">
             <h1
-            className="text-4xl text-white font-bold"
+            className="text-4xl text-white font-bold animate-pulse"
             >Click me</h1>
-          </div>
+        ) : ( isLoading ? (
+          <h1
+          className="text-4xl text-white font-bold animate-pulse"
+          >Loading...</h1>
         ) : (
         <img
           src={sprites[0]}
           alt="pokemon"
           className={ visible ? "w-80 h-90 hover:translate-y-1 hover:scale-110 transition duration-500 ease-in-out" : "w-80 h-90 hover:translate-y-1  filter contrast-0 hover:scale-110 transition duration-500 ease-in-out"}
         ></img>
-        
-        )}
+        ))}
         {gameOver ? <h1>
           Game Over <br></br> Score: {score} <br></br> <button
           className="bg-slate-800 text-white font-bold p-2 rounded-lg shadow-lg hover:bg-slate-700 transition duration-500 ease-in-out"
