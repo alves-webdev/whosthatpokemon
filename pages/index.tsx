@@ -15,11 +15,14 @@ export default function App() {
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [number, setNumber] = useState<number>(151);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
 
   async function getPokemon() {
     setWrong(false);
     setCorrect(false);
     setIsLoading(true);
+    setError(false);
     const res = await axios.get(
       "https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * number)
     );
@@ -53,6 +56,10 @@ export default function App() {
 
 
   const handlesubmit = () => {
+    if (guess === "") {
+      setError(true);
+      return;
+    }
     if (guess.toLowerCase() === pokemon?.name) {
       setSprites([
         pokemon?.sprites.versions["generation-v"]["black-white"].animated
@@ -71,11 +78,16 @@ export default function App() {
       setWrong(true);
       setVisible(true);
     }
+    setError(false);
+
   };
 
   useEffect(() => {
     const handleKeyDown = (e: { key: string; }) => {
       if (e.key === "Enter") {
+        if (correct || wrong) {
+          getPokemon();
+        }
         handlesubmit();
       }
     };
@@ -175,6 +187,13 @@ export default function App() {
         > Go </button>
       </div>
       }
+      {error ? (
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-1xl text-red font-bold">
+            You need to enter a valid guess
+          </h1>
+        </div>
+      ) : null}
     </div>
   );
 }
